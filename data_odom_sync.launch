@@ -1,0 +1,15 @@
+<launch>
+
+    <arg name="camera2" default="d435"/>
+    <group ns="rtabmap">
+        <node pkg="nodelet" type="nodelet" name="data_odom_sync" args="standalone rtabmap_legacy/data_odom_sync" output="screen" respawn="true">
+              <remap from="rgb/image_in"        to="/$(arg camera2)/color/image_raw"/>
+              <remap from="depth/image_in"      to="/$(arg camera2)/aligned_depth_to_color/image_raw"/>
+              <remap from="rgb/camera_info_in"  to="/$(arg camera2)/color/camera_info"/>
+              <remap from="odom_in"       to="/odometry/odom"/>
+                <!-- Should be true for not synchronized camera topics
+                   (e.g., false for kinectv2, zed, realsense, true for xtion, kinect360)-->
+              <param name="approx_sync"       value="false"/>
+        </node>
+    </group>
+</launch>

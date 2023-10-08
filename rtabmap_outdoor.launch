@@ -1,0 +1,170 @@
+<launch>
+
+
+    <arg name="camera1"              			default="t265"/>		<!-- Note: Replace with camera name -->
+    <arg name="camera2"              			default="d435"/>	    <!-- Note: Replace with camera name -->
+    <arg name="rtabmap_args"              			default=""/>
+    <arg name="localization"              			default="false"/>
+    <arg name="visual_odometry"    default="false"/>
+    <arg name="rviz"            default="false"/>
+
+
+    <!-- RTAB-Map's parameters -->
+<!--      <param name="RGBD/NeighborLinkRefining" type="string" value="true"/>-->
+<!--      <param name="RGBD/ProximityBySpace"     type="string" value="true"/>-->
+<!--      <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>-->
+<!--      <param name="RGBD/AngularUpdate"        type="string" value="0.05"/>-->
+<!--      <param name="RGBD/LinearUpdate"         type="string" value="0.05"/>-->
+<!--      <param name="Optimizer/Slam2D"          type="string" value="true"/>-->
+<!--      <param name="Reg/Force3DoF"             type="string" value="true"/>-->
+<!--      <param name="Reg/Strategy"              type="string" value="2"/> &lt;!&ndash; 1=ICP &ndash;&gt;-->
+<!--      <param name="Vis/MinInliers"            type="string" value="5"/>-->
+<!--      <param name="Vis/InlierDistance"        type="string" value="0.1"/>-->
+<!--      <param name="Kp/MaxDepth"               type="string" value="1.75"/>-->
+<!--      <param name="Vis/MaxDepth"              type="string" value="1.75"/>-->
+<!--      <param name="Rtabmap/TimeThr"           type="string" value="700"/>-->
+<!--      <param name="Rtabmap/DetectionRate"     type="string" value="2.0" />-->
+<!--      <param name="Mem/RehearsalSimilarity"   type="string" value="0.45"/>-->
+<!--      <param name="Grid/MaxObstacleHeight"    type="string" value="1.7" />-->
+<!--      <param name="Grid/NoiseFilteringRadius" type="string" value="0.05"/>-->
+<!--      <param name="Grid/NoiseFilteringMinNeighbors" type="string" value="5"/>-->
+
+
+<!--    <param name="/rtabmap/rtabmap/Rtabmap/TimeThr" type="string" value="700"/>-->
+    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="true"/>
+
+<!--    <param name="/rtabmap/rtabmap/Vis/MaxDepth"              type="string" value="8"/>-->
+<!--    <param name="/rtabmap/rtabmap/Vis/MinDepth"              type="string" value="0.3"/>-->
+<!--    <param name="/rtabmap/rtabmap/Vis/FeatureType"              type="string" value="8"/> &lt;!&ndash;8 "0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB."&ndash;&gt;-->
+
+
+    <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="0"/>  <!--[Motion estimation approach: 0:3D->3D, 1:3D->2D (PnP), 2:2D->2D (Epipolar Geometry)]-->
+    <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="false"/>
+    <param name="/rtabmap/rtabmap/Reg/Strategy"              type="string" value="2"/>  <!-- [0=Vis, 1=Icp, 2=VisIcp] -->
+    <param name="/rtabmap/rtabmap/Icp/VoxelSize"                 type="string" value="0.05"/>
+    <param name="/rtabmap/rtabmap/Icp/MaxCorrespondenceDistance" type="string" value="0.03"/>
+    <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="2.7" />
+
+<!--    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"    type="string" value="80" />-->
+<!--    <param name="/rtabmap/rtabmap/Grid/ClusterRadius"    type="string" value="0.3" />-->
+    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="3"/>
+    <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.5"/>
+    <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0.05"/>
+    <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="15"/>
+    <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.05"/>
+    <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.15"/>
+    <!--      <param name="/rtabmap/rtabmap/Grid/CellSize"       type="double" value="0.02"/>-->
+    <!--      <param name="/rtabmap/rtabmap/Grid/MapFrameProjection" type="bool" value="true"/>-->
+    <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="true"/>
+    <param name="/rtabmap/rtabmap/Grid/FlatObstacleDetected" type="bool" value="true"/>
+
+    <param name="/rtabmap/rtabmap/Grid/Sensor"                type="bool" value="true"/> <!--From depth (true) or from scan (false)-->
+    <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/> <!--"Footprint radius (m) used to clear all obstacles under the graph.");-->
+    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/> <!--"Erode obstacle cells.;-->
+    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"    type="string" value="0.20" />
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeIterations"    type="string" value="0" />
+
+<!--    <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd"    type="string" value="false" />-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/LoopClosureReextractFeatures"    type="string" value="true" /> &lt;!&ndash; true better accuracy of the transformation computed?&ndash;&gt;-->
+<!--    &lt;!&ndash;FROM old config&ndash;&gt;-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining" type="string" value="true"/>-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"     type="string" value="true"/>-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"        type="string" value="0.01"/>-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"         type="string" value="0.01"/>-->
+<!--&lt;!&ndash;    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"                type="double"      value="3.0"  />&ndash;&gt;-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/ProximityPathMaxNeighbors" type="string" value="10"/>-->
+<!--    <param name="/rtabmap/rtabmap/Optimizer/Strategy" type="string" value="2"/> &lt;!&ndash;[Graph optimization strategy: 0=TORO, 1=g2o, 2=GTSAM and 3=Ceres.]&ndash;&gt;-->
+<!--    <param name="/rtabmap/rtabmap/Optimizer/Robust" type="bool" value="true"/> &lt;!&ndash;[Robust graph optimization using Vertigo (only work for g2o and GTSAM optimization strategies). Not compatible with "RGBD/OptimizeMaxError" if enabled.]&ndash;&gt;-->
+
+<!--    -->
+
+
+    <group ns="rtabmap">
+
+        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args) --Rtabmap/DetectionRate 2 "> <!-- delete_db_on_start Rtabmap/DetectionRate 10-->
+            <remap from="odom" to="/rtabmap/odom_out"/>
+            <remap from="scan" to="/scan"/>
+            <remap from="rgb/image" to="/rtabmap/rgb/image_out"/>
+            <remap from="depth/image" to="/rtabmap/depth/image_out"/>
+            <remap from="rgb/camera_info"  to="/rtabmap/rgb/camera_info_out"/>
+            <remap from="gps/fix" to="/gnss_lite/fix"/>
+            <param name="wait_for_transform_duration" type="double" value="1.0"/>
+            <param name="publish_tf"  type="bool"   value="false"/>
+            <param name="odom_frame_id"           value="map"/>
+            <param name="frame_id"           value="base_link"/>
+<!--            <arg name="odom_topic"         value="/$(arg camera1)/odom/sample"/>-->
+            <param name="subscribe_depth" type="bool" value="true"/>
+            <param name="subscribe_rgbd" type="bool" value="false"/>
+            <param name="subscribe_rgb" type="bool" value="true"/>
+            <param name="subscribe_scan" type="bool" value="true"/>
+            <param name="queue_size"         value="100"/>
+            <param name="visual_odometry"       value="$(arg visual_odometry)"/>
+            <param name="odom_tf_angular_variance" value="0.0001"/> <!--graph is better optimized on loop closures If I got small odom drift-->
+            <param name="odom_tf_linear_variance" value="0.0001"/> <!--graph is better optimized on loop closures If I got small odom drift-->
+
+            <!-- Localization mode -->
+            <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
+            <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
+            <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/>
+        </node>
+
+<!--        &lt;!&ndash; visualization with rtabmapviz &ndash;&gt;-->
+<!--        <node if="$(arg rtabmapviz)" pkg="rtabmap_viz" type="rtabmapviz" name="rtabmapviz" args="" output="screen">-->
+<!--            <param name="subscribe_depth"             type="bool" value="false"/>-->
+<!--            <param name="subscribe_rgbd"             type="bool" value="true"/>-->
+<!--            <param name="subscribe_scan"              type="bool" value="true"/>-->
+<!--            <param name="frame_id"                    type="string" value="base_link"/>-->
+<!--            <param name="wait_for_transform_duration" type="double" value="0.5"/>-->
+<!--            <param name="Grid/FromDepth"                type="bool" value="true"/>-->
+
+<!--            <remap from="scan"                  to="/scan"/>-->
+<!--            <remap from="odom"                  to="/odometry/filtered/local"/>-->
+<!--            <remap from="rgb/image"             to="/$(arg camera2)/color/image_raw"/>-->
+<!--            <remap from="depth/image"           to="/$(arg camera2)/aligned_depth_to_color/image_raw"/>-->
+<!--            <remap from="rgb/camera_info"       to="/$(arg camera2)/color/camera_info"/>-->
+<!--            <remap from="rgbd_image"            to="rgbd_image"/>-->
+<!--        </node>-->
+
+  </group>
+
+
+
+
+
+
+
+
+
+<!--    <include file="$(find rtabmap_ros)/launch/rtabmap.launch">-->
+<!--        <arg name="rtabmap_args"       value="$(arg rtabmap_args) &#45;&#45;Rtabmap/DetectionRate 1"/> &lt;!&ndash; delete_db_on_start Rtabmap/DetectionRate 10&ndash;&gt;-->
+<!--        <arg name="depth_topic"        value="/$(arg camera2)/aligned_depth_to_color/image_raw"/>-->
+<!--            <arg name="frame_id"           value="base_link"/>-->
+<!--            <arg name="visual_odometry"    value="$(arg visual_odometry)"/>-->
+<!--&lt;!&ndash;            <arg name="odom_topic"         value="/$(arg camera1)/odom/sample"/>&ndash;&gt;-->
+<!--            <param name="subscribe_depth" type="bool" value="false"/>-->
+<!--            <param name="subscribe_rgbd" type="bool" value="true"/>-->
+<!--            <param name="subscribe_scan" type="bool" value="true"/>-->
+<!--            -->
+<!--            <remap from="odom" to="/base_controller/odom"/>-->
+<!--            <remap from="scan" to="/base_scan"/>-->
+<!--            <remap from="rgbd_image" to="rgbd_image"/>-->
+<!--            -->
+<!--            <param name="queue_size" type="int" value="10"/>-->
+<!--            <arg name="odom_topic"         value="/odom_grounded"/>-->
+<!--            <arg name="rgb_topic"          value="/$(arg camera2)/color/image_raw"/>-->
+<!--            <arg name="camera_info_topic"  value="/$(arg camera2)/color/camera_info"/>-->
+<!--            <arg name="queue_size"         value="200"/>-->
+<!--            <arg name="rviz"               value="false"/>-->
+<!--            <arg name="rtabmapviz"         value="false"/>-->
+<!--            <arg name="localization"       value="$(arg localization)"/>-->
+
+
+
+
+
+
+<!--    </include>-->
+
+
+
+</launch>

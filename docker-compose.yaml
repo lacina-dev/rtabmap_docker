@@ -1,0 +1,6 @@
+version: '2'
+
+services:
+  vitulus:
+    build: .
+    image: vitulus/rtabmap_ros:noetic-latest

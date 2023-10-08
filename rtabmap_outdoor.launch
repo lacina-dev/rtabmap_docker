@@ -87,7 +87,7 @@
             <remap from="rgb/image" to="/rtabmap/rgb/image_out"/>
             <remap from="depth/image" to="/rtabmap/depth/image_out"/>
             <remap from="rgb/camera_info"  to="/rtabmap/rgb/camera_info_out"/>
-            <remap from="gps/fix" to="/gnss_lite/fix"/>
+            <remap from="gps/fix" to="/gnss/fix"/>
             <param name="wait_for_transform_duration" type="double" value="1.0"/>
             <param name="publish_tf"  type="bool"   value="false"/>
             <param name="odom_frame_id"           value="map"/>

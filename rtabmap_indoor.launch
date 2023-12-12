@@ -11,49 +11,53 @@
 
 
     <!-- RTAB-Map's parameters -->
-      <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining" type="string" value="true"/>
-      <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"     type="string" value="true"/>
-      <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
-      <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"        type="string" value="0.05"/>
-      <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"         type="string" value="0.05"/>
-      <param name="/rtabmap/rtabmap/RGBD/StartAtOrigin"         type="bool" value="false"/>  <!--  When RGBD/SavedLocalizationIgnored is set to true, rtabmap won't publish the map until it can be localized against the map saved in the database.-->
-<!--      <param name="/rtabmap/rtabmap/Optimizer/Slam2D"          type="string" value="true"/>-->  <!--  OLD PARAM-->
-      <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="true"/>
-      <param name="/rtabmap/rtabmap/Reg/Strategy"              type="string" value="0"/> <!-- [0=Vis, 1=Icp, 2=VisIcp] -->
-      <param name="/rtabmap/rtabmap/Vis/FeatureType"            type="string" value="6"/>  <!-- same as kp/detectorstrategy[0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB 9=KAZE 10=ORB-OCTREE 11=SuperPoint 12=SURF/FREAK 13=GFTT/DAISY 14=SURF/DAISY 15=PyDetector] -->
-      <param name="/rtabmap/rtabmap/Vis/MinInliers"            type="string" value="6"/>
-      <param name="/rtabmap/rtabmap/Vis/InlierDistance"        type="string" value="0.1"/>
-      <param name="/rtabmap/rtabmap/Kp/MaxDepth"               type="string" value="2.5"/>
-      <param name="/rtabmap/rtabmap/Kp/DetectorStrategy"        type="string" value="6"/>   <!--8same as vis/featuretype [0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB 9=KAZE 10=ORB-OCTREE 11=SuperPoint 12=SURF/FREAK 13=GFTT/DAISY 14=SURF/DAISY 15=PyDetector] -->
-      <param name="/rtabmap/rtabmap/Kp/NNStrategy" type="string" value="1"/>         <!-- kdTree -->
-      <param name="/rtabmap/rtabmap/Vis/MaxDepth"              type="string" value="2.5"/>
-      <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="1"/>  <!--[Motion estimation approach: 0:3D->3D, 1:3D->2D (PnP), 2:2D->2D (Epipolar Geometry)]-->
-      <param name="/rtabmap/rtabmap/Rtabmap/TimeThr"           type="string" value="700"/>
-      <param name="/rtabmap/rtabmap/Rtabmap/DetectionRate"     type="string" value="2.0" />
-      <param name="/rtabmap/rtabmap/Mem/RehearsalSimilarity"   type="string" value="0.45"/>
-      <param name="/rtabmap/rtabmap/Grid/Sensor"               type="string" value="1" />  <!-- Grid map made from 1: depth, 0: scan, 2: both laser and depth -->
-<!--      <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight"    type="string" value="1.7" />-->
-      <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="string" value="0.05"/>
-      <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="string" value="5"/>
-      <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="2.5" />
-      <param name="/rtabmap/rtabmap/Optimizer/Strategy" type="string" value="1"/> <!--[Graph optimization strategy: 0=TORO, 1=g2o, 2=GTSAM and 3=Ceres.]-->
-      <param name="/rtabmap/rtabmap/Optimizer/Robust" type="bool" value="true"/> <!--[Robust graph optimization using Vertigo (only work for g2o and GTSAM optimization strategies). Not compatible with "RGBD/OptimizeMaxError" if enabled.]-->
+<!--      <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining" type="string" value="true"/>-->
+<!--      <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"     type="string" value="true"/>-->
+<!--      <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd" type="string" value="false"/>-->
+<!--      <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"        type="string" value="0.05"/>-->
+<!--      <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"         type="string" value="0.05"/>-->
+<!--      <param name="/rtabmap/rtabmap/RGBD/StartAtOrigin"         type="bool" value="false"/>  &lt;!&ndash;  When RGBD/SavedLocalizationIgnored is set to true, rtabmap won't publish the map until it can be localized against the map saved in the database.&ndash;&gt;-->
+<!--&lt;!&ndash;      <param name="/rtabmap/rtabmap/Optimizer/Slam2D"          type="string" value="true"/>&ndash;&gt;  &lt;!&ndash;  OLD PARAM&ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="true"/>-->
+<!--      <param name="/rtabmap/rtabmap/Reg/Strategy"              type="string" value="0"/> &lt;!&ndash; [0=Vis, 1=Icp, 2=VisIcp] &ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Vis/FeatureType"            type="string" value="6"/>  &lt;!&ndash; same as kp/detectorstrategy[0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB 9=KAZE 10=ORB-OCTREE 11=SuperPoint 12=SURF/FREAK 13=GFTT/DAISY 14=SURF/DAISY 15=PyDetector] &ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Vis/MinInliers"            type="string" value="6"/>-->
+<!--      <param name="/rtabmap/rtabmap/Vis/InlierDistance"        type="string" value="0.1"/>-->
+<!--      <param name="/rtabmap/rtabmap/Kp/MaxDepth"               type="string" value="2.5"/>-->
+<!--      <param name="/rtabmap/rtabmap/Kp/DetectorStrategy"        type="string" value="6"/>   &lt;!&ndash;8same as vis/featuretype [0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB 9=KAZE 10=ORB-OCTREE 11=SuperPoint 12=SURF/FREAK 13=GFTT/DAISY 14=SURF/DAISY 15=PyDetector] &ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Kp/NNStrategy" type="string" value="1"/>         &lt;!&ndash; kdTree &ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Vis/MaxDepth"              type="string" value="2.5"/>-->
+<!--      <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="1"/>  &lt;!&ndash;[Motion estimation approach: 0:3D->3D, 1:3D->2D (PnP), 2:2D->2D (Epipolar Geometry)]&ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Rtabmap/TimeThr"           type="string" value="700"/>-->
+<!--      <param name="/rtabmap/rtabmap/Rtabmap/DetectionRate"     type="string" value="2.0" />-->
+<!--      <param name="/rtabmap/rtabmap/Mem/RehearsalSimilarity"   type="string" value="0.45"/>-->
+<!--      <param name="/rtabmap/rtabmap/Grid/Sensor"               type="string" value="1" />  &lt;!&ndash; Grid map made from 1: depth, 0: scan, 2: both laser and depth &ndash;&gt;-->
+<!--&lt;!&ndash;      <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight"    type="string" value="1.7" />&ndash;&gt;-->
+<!--&lt;!&ndash;      <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="string" value="0.05"/>&ndash;&gt;-->
+<!--&lt;!&ndash;      <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="string" value="5"/>&ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="2.5" />-->
+<!--      <param name="/rtabmap/rtabmap/Optimizer/Strategy" type="string" value="1"/> &lt;!&ndash;[Graph optimization strategy: 0=TORO, 1=g2o, 2=GTSAM and 3=Ceres.]&ndash;&gt;-->
+<!--      <param name="/rtabmap/rtabmap/Optimizer/Robust" type="bool" value="true"/> &lt;!&ndash;[Robust graph optimization using Vertigo (only work for g2o and GTSAM optimization strategies). Not compatible with "RGBD/OptimizeMaxError" if enabled.]&ndash;&gt;-->
 
-    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="3"/>
-        <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.5"/>
-        <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0.05"/>
-        <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="15"/>
-        <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.05"/>
-        <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.15"/>
+<!--    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="3"/>-->
+<!--        <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.5"/>-->
+<!--        <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0.03"/>-->
+<!--        <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="15"/>-->
+<!--        <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.05"/>-->
+<!--        <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.15"/>-->
         <!--      <param name="/rtabmap/rtabmap/Grid/CellSize"       type="double" value="0.02"/>-->
         <!--      <param name="/rtabmap/rtabmap/Grid/MapFrameProjection" type="bool" value="true"/>-->
-        <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="true"/>
-        <param name="/rtabmap/rtabmap/Grid/FlatObstacleDetected" type="bool" value="true"/>
+<!--        <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="true"/>-->
+<!--        <param name="/rtabmap/rtabmap/Grid/FlatObstacleDetected" type="bool" value="true"/>-->
 
-    <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/> <!--"Footprint radius (m) used to clear all obstacles under the graph.");-->
-    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/> <!--"Erode obstacle cells.;-->
-    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"    type="string" value="0.20" />
-    <param name="/rtabmap/rtabmap/RGBD/OptimizeIterations"    type="string" value="10" />
+<!--    <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/> &lt;!&ndash;"Footprint radius (m) used to clear all obstacles under the graph.");&ndash;&gt;-->
+<!--    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/> &lt;!&ndash;"Erode obstacle cells.;&ndash;&gt;-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"    type="string" value="0.20" />-->
+<!--    <param name="/rtabmap/rtabmap/RGBD/OptimizeIterations"    type="string" value="10" />-->
+
+
+
+
 
 
 
@@ -161,16 +165,16 @@
 <!--        </node>-->
 
     <!--    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="&#45;&#45;delete_db_on_start">       -->
-        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args) --delete_db_on_start --Rtabmap/DetectionRate 2"> <!-- delete_db_on_start Rtabmap/DetectionRate 10-->
+        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args) --Rtabmap/DetectionRate 2"> <!-- delete_db_on_start Rtabmap/DetectionRate 10-->
 <!--            <remap from="odom" to="/odometry/odom"/>-->
             <remap from="scan" to="/scan"/>
             <remap from="rgbd_image" to="rgbd_image"/>
             <param name="wait_for_transform_duration" type="double" value="1.0"/>
             <param name="publish_tf"  type="bool"   value="true"/>
 
-            <param name="odom_frame_id"           value="map"/>
+            <param name="odom_frame_id"           value="odom"/>
 <!--                <param name="odom_frame_id"           value="t265_odom_frame"/>-->
-                <param name="frame_id"           value="base_link"/>
+<!--                <param name="frame_id"           value="base_link"/>-->
 <!--                <param name="visual_odometry"    value="$(arg visual_odometry)"/>-->
     <!--            <arg name="odom_topic"         value="/$(arg camera1)/odom/sample"/>-->
                 <param name="subscribe_depth" type="bool" value="false"/>
@@ -181,8 +185,24 @@
                 <param name="queue_size"         value="100"/>
                 <param name="visual_odometry"       value="$(arg visual_odometry)"/>
 
-                <param name="odom_tf_angular_variance" value="0.0001"/> <!--graph is better optimized on loop closures If I got small odom drift-->
-                <param name="odom_tf_linear_variance" value="0.0001"/> <!--graph is better optimized on loop closures If I got small odom drift-->
+<!--                <param name="odom_tf_angular_variance" value="0.0001"/> &lt;!&ndash;graph is better optimized on loop closures If I got small odom drift&ndash;&gt;-->
+<!--                <param name="odom_tf_linear_variance" value="0.0001"/> &lt;!&ndash;graph is better optimized on loop closures If I got small odom drift&ndash;&gt;-->
+
+
+                <!-- RTAB-Map's parameters -->
+                  <param name="RGBD/NeighborLinkRefining" type="string" value="true"/>
+                  <param name="RGBD/ProximityBySpace"     type="string" value="true"/>
+                  <param name="RGBD/AngularUpdate"        type="string" value="0.01"/>
+                  <param name="RGBD/LinearUpdate"         type="string" value="0.01"/>
+                  <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+                  <param name="Grid/FromDepth"            type="string" value="false"/> <!-- occupancy grid from lidar -->
+                  <param name="Reg/Force3DoF"             type="string" value="true"/>
+                  <param name="Reg/Strategy"              type="string" value="1"/> <!-- [0=Vis, 1=Icp, 2=VisIcp] -->
+
+                  <!-- ICP parameters -->
+                  <param name="Icp/VoxelSize"                 type="string" value="0.05"/>
+                  <param name="Icp/MaxCorrespondenceDistance" type="string" value="0.1"/>
+
 
                 <!-- Localization mode -->
                   <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>

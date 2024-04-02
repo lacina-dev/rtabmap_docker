@@ -15,6 +15,7 @@
     </node>
 
     <node pkg="nodelet" type="nodelet" name="obstacles_detection" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing" output="screen">
+<!--        <remap from="cloud"     to="/vdb_mapping/vdb_map_pointcloud"/>-->
         <remap from="cloud"     to="/cloudXYZ"/>
         <remap from="obstacles" to="/obstacles_cloud"/>
         <remap from="ground"    to="/ground_cloud"/>

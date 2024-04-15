@@ -43,6 +43,8 @@
             <param name="Grid/FromDepth"            type="string" value="false"/> <!-- occupancy grid from lidar -->
             <param name="Reg/Force3DoF"             type="string" value="true"/>
             <param name="Reg/Strategy"              type="string" value="1"/> <!-- [0=Vis, 1=Icp, 2=VisIcp] -->
+            <param name="Grid/Sensor"               type="int" value="0"/> <!--"Create occupancy grid from selected sensor: 0=laser scan, 1=depth image(s) or 2=both laser scan and depth image(s).");-->
+
 
             <!-- ICP parameters -->
             <param name="Icp/VoxelSize"                 type="string" value="0.05"/>

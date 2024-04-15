@@ -8,7 +8,7 @@
     <arg name="rviz"            default="false"/>
 
     <!-- RTAB-Map's parameters -->
-    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="false"/>
+    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="true"/>
     <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="0"/>  <!--[Motion estimation approach: 0:3D->3D, 1:3D->2D (PnP), 2:2D->2D (Epipolar Geometry)]-->
     <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="false"/>
     <param name="/rtabmap/rtabmap/Reg/Strategy"              type="string" value="2"/>  <!-- [0=Vis, 1=Icp, 2=VisIcp] -->
@@ -17,27 +17,31 @@
     <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="2.7" />
     <!--    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"    type="string" value="80" />-->
     <!--    <param name="/rtabmap/rtabmap/Grid/ClusterRadius"    type="string" value="0.3" />-->
-    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="3"/>
-    <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.5"/>
-    <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0.05"/>
-    <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="15"/>
-    <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.05"/>
+    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="10"/>
+    <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.6"/>
+    <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0"/>
+    <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="55"/>
+    <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.15"/>
     <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.15"/>
     <!--      <param name="/rtabmap/rtabmap/Grid/CellSize"       type="double" value="0.02"/>-->
     <!--      <param name="/rtabmap/rtabmap/Grid/MapFrameProjection" type="bool" value="true"/>-->
     <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="true"/>
     <param name="/rtabmap/rtabmap/Grid/FlatObstacleDetected" type="bool" value="true"/>
-    <param name="/rtabmap/rtabmap/Grid/Sensor"                type="bool" value="true"/> <!--From depth (true) or from scan (false)-->
+    <param name="/rtabmap/rtabmap/Grid/Sensor"                type="int" value="1"/> <!--"Create occupancy grid from selected sensor: 0=laser scan, 1=depth image(s) or 2=both laser scan and depth image(s).");-->
     <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/> <!--"Footprint radius (m) used to clear all obstacles under the graph.");-->
     <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/> <!--"Erode obstacle cells.;-->
-    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"    type="string" value="2.20" />
-    <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"   type="string" value="false" />
-    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"    type="string" value="0" /> <!-- should be 0 if RGBD/OptimizeRobust is true -->
+    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"    type="string" value="0.20" />
+    <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"   type="string" value="true" />
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"    type="string" value="0.0" /> <!-- should be 0 if RGBD/OptimizeRobust is true -->
+    <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"    type="double" value="0.1" />
+    <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"    type="double" value="0.1" />
+    <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining"    type="bool" value="false" />
+    <param name="/rtabmap/rtabmap/RGBD/ForceOdom3DoF"    type="bool" value="false" />
     <param name="/rtabmap/rtabmap/Optimizer/Strategy"    type="string" value="2" /> <!-- g2o=1, GTSAM=2 -->
-    <param name="/rtabmap/rtabmap/Optimizer/Robust"    type="string" value="true" />
-    <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd"    type="string" value="false" />
+    <param name="/rtabmap/rtabmap/Optimizer/Robust"    type="string" value="false" />
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd"    type="bool" value="false" />
 <!--    <param name="/rtabmap/rtabmap/RGBD/OptimizeIterations"    type="string" value="0" />-->
-    <param name="/rtabmap/rtabmap/Optimizer/Iterations"    type="string" value="0" />
+    <param name="/rtabmap/rtabmap/Optimizer/Iterations"    type="int" value="0" />
 
 
     <group ns="rtabmap">

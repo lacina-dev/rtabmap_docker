@@ -8,7 +8,7 @@
     <arg name="rviz"            default="false"/>
 
     <!-- RTAB-Map's parameters -->
-    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="true"/>
+    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="false"/>
     <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="0"/>  <!--[Motion estimation approach: 0:3D->3D, 1:3D->2D (PnP), 2:2D->2D (Epipolar Geometry)]-->
     <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="false"/>
     <param name="/rtabmap/rtabmap/Reg/Strategy"              type="string" value="2"/>  <!-- [0=Vis, 1=Icp, 2=VisIcp] -->

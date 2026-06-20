@@ -37,8 +37,23 @@
             <param name="visual_odometry"       value="$(arg visual_odometry)"/>
             <param name="RGBD/NeighborLinkRefining" type="string" value="true"/>
             <param name="RGBD/ProximityBySpace"     type="string" value="true"/>
-            <param name="RGBD/AngularUpdate"        type="string" value="0.01"/>
-            <param name="RGBD/LinearUpdate"         type="string" value="0.01"/>
+            <!-- Update the map only when the robot actually moves. At 0.01 (1 cm /
+                 0.57 deg) odometry noise while parked in the dock constantly crossed
+                 the threshold, so rtabmap kept adding RGB-D nodes at DetectionRate
+                 (2 Hz) even standing still -> rtabmap.db grew without bound and could
+                 fill the disk. 0.1 m / 0.1 rad is rtabmap's default and matches the
+                 other vitulus launches; a stationary robot now adds no new nodes,
+                 while mapping resolution stays fine for indoor use. -->
+            <param name="RGBD/AngularUpdate"        type="string" value="0.1"/>
+            <param name="RGBD/LinearUpdate"         type="string" value="0.1"/>
+            <!-- With LinearUpdate/AngularUpdate the threshold correctly REJECTS the
+                 frames captured while standing still (they get weight -9, unlinked).
+                 But by default (NotLinkedNodesKept=true) rtabmap still WRITES those
+                 rejected nodes to the db with full RGB+depth+scan data, so the db
+                 kept growing ~25 MB/min in the dock. Setting it false discards the
+                 rejected/unlinked nodes instead of saving them -> no disk growth
+                 while stationary. The real map graph (linked keyframes) is unaffected. -->
+            <param name="Mem/NotLinkedNodesKept"    type="string" value="false"/>
             <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
             <param name="Grid/FromDepth"            type="string" value="false"/> <!-- occupancy grid from lidar -->
             <param name="Reg/Force3DoF"             type="string" value="true"/>

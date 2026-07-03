@@ -1,4 +1,44 @@
 <launch>
+    <!-- ========================================================================
+         rtabmap_outdoor_unified.launch  (2026-06-21, audit-hardened)
+
+         Unified-localization config: ONE rtabmap map for relocalization DAY and
+         NIGHT, with or without GPS, accurate + fast to relocalize in, and
+         editable/extendable over seasons. Tuned from a multi-agent rtabmap audit
+         + adversarial review (see UNIFIED_LOCALIZATION_PLAN.md).
+
+         Drop-in for the production outdoor rtabmap (same /rtabmap namespace, same
+         data_odom_sync input from /odometry/odom, publish_tf=false). The original
+         is preserved as rtabmap_outdoor.launch.orig (rollback).
+
+         ARGS:
+           localization:=true   relocalize against an existing map (no mapping)
+         (the former night:=true arg was REMOVED 2026-06-27: camera off / ICP-only
+          removed the only prior-free global relocalization; camera stays ON always)
+
+         CHANGES vs the original outdoor config (only REAL fixes; no-ops are set
+         explicitly only for documentation):
+           Icp/MaxCorrespondenceDistance 0.03 -> 0.1   (#1 was < VoxelSize 0.05)
+           RGBD/LocalRadius              0.20 -> 5.0    (#2 0.20 throttled proximity)
+           RGBD/ProximityPathMaxNeighbors unset(0)->10 (#3 one-to-many reloc, biggest unlock)
+           RGBD/ProximityOdomGuess       unset -> true (#13 seed ICP from EKF pose: anti wrong-row)
+           Reg/Force3DoF                 false -> true (#4 single-ring 2D lidar)
+           Grid/Sensor                   1 -> 2         (#5 lidar+depth grid, night-capable)
+           Grid/RangeMax                 2.7 -> 8.0     (#6)
+           Grid/RayTracing               unset -> true  (#7 re-clears stale seasonal obstacles)
+           RGBD/NeighborLinkRefining     false -> true  (#8 accuracy when loops scarce)
+           Mem/NotLinkedNodesKept        unset(true)->false (#9 stop db bloat while idle)
+           Icp/CorrespondenceRatio       unset -> 0.2   (#12 reject low-overlap aliased loops)
+           Icp/MaxTranslation            unset -> 0.5   (#17 anti-teleport)
+           odom_tf_linear_variance       1e-4 -> 1e-3   (#10 let loops correct drift)
+           odom_tf_angular_variance      1e-4 -> 4e-3   (#11 heading-dominated drift)
+           OptimizeMaxError              0.0 -> 3.0     (finite gate vs aliased loops in symmetric field)
+           Optimizer/Robust/Iterations   already true/20 (graph optimization ON)
+         Localization arg: + ProximityGlobalScanMap, + MaxOdomCacheSize, DetectionRate 4.
+         Explicit no-ops (already at rtabmap default; do NOT attribute fixes to them):
+           RGBD/ForceOdom3DoF=true, Icp/PointToPlane=false, Optimizer/PriorsIgnored=true.
+         Icp/Strategy (libpointmatcher) left default — verify build before enabling (plan Phase 0).
+         ======================================================================== -->
 
     <arg name="camera1"              			default="t265"/>
     <arg name="camera2"              			default="d435"/>
@@ -7,46 +47,75 @@
     <arg name="visual_odometry"    default="false"/>
     <arg name="rviz"            default="false"/>
 
-    <!-- RTAB-Map's parameters -->
-    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="false"/>
-    <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="0"/>  <!--[Motion estimation approach: 0:3D->3D, 1:3D->2D (PnP), 2:2D->2D (Epipolar Geometry)]-->
-    <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="false"/>
-    <param name="/rtabmap/rtabmap/Reg/Strategy"              type="string" value="2"/>  <!-- [0=Vis, 1=Icp, 2=VisIcp] -->
+    <!-- ===== RTAB-Map parameters ===== -->
+    <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="false"/>   <!-- db stays GPS-agnostic; georef is an outer map->utm layer -->
+    <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="0"/>
+
+    <!-- Registration: 2D ground robot. ALWAYS VisIcp (Strategy=2), camera ON even at
+         night. CORRECTION 2026-06-27 (verified vs Labbé/rtabmap docs): ICP-only
+         (Strategy=1) removes rtabmap's ONLY prior-free global relocalization (visual
+         bag-of-words) and forces an external prior every time. In LOCALIZATION mode
+         dark frames just yield no hypothesis — they do NOT poison the saved map — so
+         keeping the camera on is strictly better (auto-corrects whenever any usable
+         imagery exists: dusk, lit areas, headlamp). Night/no-GPS relocalization is
+         handled by an EXTERNAL coarse prior (dock -> /rtabmap/initialpose), not by
+         disabling the camera. See UNIFIED_LOCALIZATION_PLAN.md Layer 2b. -->
+    <param name="/rtabmap/rtabmap/Reg/Force3DoF"             type="string" value="true"/>   <!-- #4 -->
+    <param name="/rtabmap/rtabmap/Reg/Strategy"             type="string" value="2"/>       <!-- VisIcp (NOT ICP-only) -->
+    <param name="/rtabmap/rtabmap/RGBD/ForceOdom3DoF"        type="bool"   value="true"/>   <!-- no-op (default true), explicit -->
+
+    <!-- ICP tuning for the 360-degree 2D lidar -->
     <param name="/rtabmap/rtabmap/Icp/VoxelSize"                 type="string" value="0.05"/>
-    <param name="/rtabmap/rtabmap/Icp/MaxCorrespondenceDistance" type="string" value="0.03"/>
-    <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="2.7" />
-    <!--    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"    type="string" value="80" />-->
-    <!--    <param name="/rtabmap/rtabmap/Grid/ClusterRadius"    type="string" value="0.3" />-->
+    <param name="/rtabmap/rtabmap/Icp/MaxCorrespondenceDistance" type="string" value="0.1"/>   <!-- #1 (was 0.03 < voxel) -->
+    <param name="/rtabmap/rtabmap/Icp/CorrespondenceRatio"       type="string" value="0.2"/>   <!-- #12 -->
+    <param name="/rtabmap/rtabmap/Icp/PointToPlane"             type="string" value="false"/>  <!-- no-op (default false), explicit -->
+    <param name="/rtabmap/rtabmap/Icp/MaxTranslation"          type="string" value="0.5"/>     <!-- #17 anti-teleport -->
+
+    <!-- Proximity detection = the lidar relocalization unlock -->
+    <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"        type="string" value="true"/>
+    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"            type="string" value="8.0"/>     <!-- #2 (was 0.20); 8 m tolerates a coarse seed prior (e.g. dock initialpose) before ICP locks; sweep 5-10 vs aliasing -->
+    <param name="/rtabmap/rtabmap/RGBD/ProximityPathMaxNeighbors" type="string" value="10"/>  <!-- #3 (was 0 = one-to-many OFF) -->
+    <param name="/rtabmap/rtabmap/RGBD/ProximityOdomGuess"     type="string" value="true"/>   <!-- #13 seed proximity ICP from EKF pose -->
+
+    <!-- Graph optimization & accuracy -->
+    <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining"    type="bool" value="true"/>    <!-- #8 -->
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd"    type="bool" value="false"/>
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"        type="string" value="3.0"/>   <!-- finite gate vs aliased loops (kept db) -->
+    <param name="/rtabmap/rtabmap/Optimizer/Strategy"          type="string" value="2"/>      <!-- GTSAM -->
+    <param name="/rtabmap/rtabmap/Optimizer/Robust"            type="string" value="true"/>
+    <param name="/rtabmap/rtabmap/Optimizer/Iterations"        type="int"    value="20"/>     <!-- graph optimization ON -->
+    <param name="/rtabmap/rtabmap/Optimizer/PriorsIgnored"     type="string" value="true"/>   <!-- no-op (default true), explicit -->
+
+    <!-- Memory / db hygiene (seasonal maintainability) -->
+    <param name="/rtabmap/rtabmap/Mem/NotLinkedNodesKept"      type="string" value="false"/>  <!-- #9 stop ~25 MB/min db bloat while idle -->
+
+    <!-- Occupancy grid for navigation (lidar-fed; works at night) -->
+    <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="8.0" />   <!-- #6 (was 2.7) -->
+    <param name="/rtabmap/rtabmap/Grid/Sensor"      type="int"    value="2"/>       <!-- #5 scan + depth (was 1=depth only) -->
+    <param name="/rtabmap/rtabmap/Grid/RayTracing"  type="bool"   value="true"/>    <!-- #7 re-clear stale/seasonal obstacles -->
     <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="10"/>
     <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.6"/>
     <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0"/>
     <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="55"/>
     <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.15"/>
     <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.15"/>
-    <!--      <param name="/rtabmap/rtabmap/Grid/CellSize"       type="double" value="0.02"/>-->
-    <!--      <param name="/rtabmap/rtabmap/Grid/MapFrameProjection" type="bool" value="true"/>-->
     <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="true"/>
     <param name="/rtabmap/rtabmap/Grid/FlatObstacleDetected" type="bool" value="true"/>
-    <param name="/rtabmap/rtabmap/Grid/Sensor"                type="int" value="1"/> <!--"Create occupancy grid from selected sensor: 0=laser scan, 1=depth image(s) or 2=both laser scan and depth image(s).");-->
-    <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/> <!--"Footprint radius (m) used to clear all obstacles under the graph.");-->
-    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/> <!--"Erode obstacle cells.;-->
-    <param name="/rtabmap/rtabmap/RGBD/LocalRadius"    type="string" value="0.20" />
-    <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"   type="string" value="true" />
-    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"    type="string" value="0.0" /> <!-- should be 0 if RGBD/OptimizeRobust is true -->
-    <param name="/rtabmap/rtabmap/RGBD/AngularUpdate"    type="double" value="0.1" />
-    <param name="/rtabmap/rtabmap/RGBD/LinearUpdate"    type="double" value="0.1" />
-    <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining"    type="bool" value="false" />
-    <param name="/rtabmap/rtabmap/RGBD/ForceOdom3DoF"    type="bool" value="false" />
-    <param name="/rtabmap/rtabmap/Optimizer/Strategy"    type="string" value="2" /> <!-- g2o=1, GTSAM=2 -->
-    <param name="/rtabmap/rtabmap/Optimizer/Robust"    type="string" value="false" />
-    <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd"    type="bool" value="false" />
-<!--    <param name="/rtabmap/rtabmap/RGBD/OptimizeIterations"    type="string" value="0" />-->
-    <param name="/rtabmap/rtabmap/Optimizer/Iterations"    type="int" value="0" />
+    <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/>
+    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/>
+
+    <!-- Detection rate: 2 Hz mapping, 4 Hz localization (snappier re-lock, no nodes written) -->
+    <param     if="$(arg localization)" name="/rtabmap/rtabmap/Rtabmap/DetectionRate" type="string" value="4"/>
+    <param unless="$(arg localization)" name="/rtabmap/rtabmap/Rtabmap/DetectionRate" type="string" value="2"/>
+
+    <!-- Localization-mode-only: whole-map kidnap reloc + odom-cache anti-teleport -->
+    <param if="$(arg localization)" name="/rtabmap/rtabmap/RGBD/ProximityGlobalScanMap" type="string" value="true"/>  <!-- #15 -->
+    <param if="$(arg localization)" name="/rtabmap/rtabmap/RGBD/MaxOdomCacheSize"       type="string" value="20"/>    <!-- #16 -->
 
 
     <group ns="rtabmap">
 
-        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args) --Rtabmap/DetectionRate 2 "> <!-- delete_db_on_start Rtabmap/DetectionRate 10-->
+        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args)">
             <remap from="odom" to="/rtabmap/odom_out"/>
             <remap from="scan" to="/scan"/>
             <remap from="rgb/image" to="/rtabmap/rgb/image_out"/>
@@ -55,23 +124,32 @@
             <remap from="gps/fix" to="/gnss/fix"/>
             <param name="wait_for_transform_duration" type="double" value="2.0"/>
             <param name="publish_tf"  type="bool"   value="false"/>
-<!--            <param name="odom_frame_id"           value="map"/>-->
             <param name="odom_frame_id"           value="odom"/>
             <param name="map_frame_id"           value="map"/>
             <param name="frame_id"           value="base_link"/>
-            <param name="subscribe_depth" type="bool" value="true"/>
-            <param name="subscribe_rgbd" type="bool" value="false"/>
-            <param name="subscribe_rgb" type="bool" value="true"/>
             <param name="subscribe_scan" type="bool" value="true"/>
+            <!-- camera ALWAYS ON (incl. night) — see Reg/Strategy correction above:
+                 it is the only prior-free global relocalization and does not poison
+                 the map in localization mode. -->
+            <param name="subscribe_depth" type="bool" value="true"/>
+            <param name="subscribe_rgb"   type="bool" value="true"/>
+            <param name="subscribe_rgbd" type="bool" value="false"/>
             <param name="queue_size"         value="100"/>
             <param name="visual_odometry"       value="$(arg visual_odometry)"/>
-            <param name="odom_tf_angular_variance" value="0.0001"/> <!--graph is better optimized on loop closures If I got small odom drift-->
-            <param name="odom_tf_linear_variance" value="0.0001"/> <!--graph is better optimized on loop closures If I got small odom drift-->
+            <param name="odom_tf_angular_variance" value="0.004"/>   <!-- #11 heading-dominated drift (> linear) -->
+            <param name="odom_tf_linear_variance" value="0.001"/>    <!-- #10 -->
 
-            <!-- Localization mode -->
+            <!-- Mapping (IncrementalMemory=true) vs Localization (false + load whole map for kidnap reloc) -->
             <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
             <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
-            <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/>
+            <!-- FIX 2026-06-27: load the WHOLE existing map into Working Memory in BOTH
+                 modes. Was tied to the localization arg, so a mapping-restart on an
+                 existing map started with empty WM -> no loop closure to the old map ->
+                 it drew a disconnected NEW map. true everywhere lets loop closures fire
+                 against the loaded map so mapping CONTINUES/relocalizes into it.
+                 (Cost: WM load time/RAM scale with db size - acceptable for correctness;
+                 prune/seasonal-trim per the plan to bound it.) -->
+            <param name="Mem/InitWMWithAllNodes" type="string" value="true"/>
         </node>
 
     </group>

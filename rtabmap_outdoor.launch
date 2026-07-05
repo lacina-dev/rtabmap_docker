@@ -50,6 +50,9 @@
     <!-- ===== RTAB-Map parameters ===== -->
     <param name="/rtabmap/rtabmap/Rtabmap/LoopGPS" type="string" value="false"/>   <!-- db stays GPS-agnostic; georef is an outer map->utm layer -->
     <param name="/rtabmap/rtabmap/Vis/EstimationType"        type="string" value="0"/>
+    <!-- FIELD LESSON 2026-07-05: garden revisits repeatedly scored 16-19 visual
+         inliers against the default 20 -> loop candidates died just under the bar. -->
+    <param name="/rtabmap/rtabmap/Vis/MinInliers"            type="string" value="15"/>
 
     <!-- Registration: 2D ground robot. ALWAYS VisIcp (Strategy=2), camera ON even at
          night. CORRECTION 2026-06-27 (verified vs Labbé/rtabmap docs): ICP-only
@@ -67,7 +70,10 @@
     <!-- ICP tuning for the 360-degree 2D lidar -->
     <param name="/rtabmap/rtabmap/Icp/VoxelSize"                 type="string" value="0.05"/>
     <param name="/rtabmap/rtabmap/Icp/MaxCorrespondenceDistance" type="string" value="0.1"/>   <!-- #1 (was 0.03 < voxel) -->
-    <param name="/rtabmap/rtabmap/Icp/CorrespondenceRatio"       type="string" value="0.2"/>   <!-- #12 -->
+    <!-- FIELD LESSON 2026-07-05 (mapping drive): 0.2 rejected EVERY revisit on the
+         open lawn (real overlap ~2-15%); with OptimizeMaxError+Robust+MaxTranslation
+         still guarding, the rtabmap default 0.1 is the right gate. -->
+    <param name="/rtabmap/rtabmap/Icp/CorrespondenceRatio"       type="string" value="0.1"/>
     <param name="/rtabmap/rtabmap/Icp/PointToPlane"             type="string" value="false"/>  <!-- no-op (default false), explicit -->
     <param name="/rtabmap/rtabmap/Icp/MaxTranslation"          type="string" value="0.5"/>     <!-- #17 anti-teleport -->
 
@@ -80,7 +86,11 @@
     <!-- Graph optimization & accuracy -->
     <param name="/rtabmap/rtabmap/RGBD/NeighborLinkRefining"    type="bool" value="true"/>    <!-- #8 -->
     <param name="/rtabmap/rtabmap/RGBD/OptimizeFromGraphEnd"    type="bool" value="false"/>
-    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"        type="string" value="3.0"/>   <!-- finite gate vs aliased loops (kept db) -->
+    <!-- FIELD LESSON 2026-07-05: at 3.0 a single slightly-tense ACCEPTED edge
+         (0.37 deg abs error vs overconfident stddev) locked out ALL further loop
+         closures for the rest of the mapping run (499 rejections/6 min). 5.0 keeps
+         a finite gate against真 aliased loops without the lock-out. -->
+    <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"        type="string" value="5.0"/>
     <param name="/rtabmap/rtabmap/Optimizer/Strategy"          type="string" value="2"/>      <!-- GTSAM -->
     <param name="/rtabmap/rtabmap/Optimizer/Robust"            type="string" value="true"/>
     <param name="/rtabmap/rtabmap/Optimizer/Iterations"        type="int"    value="20"/>     <!-- graph optimization ON -->

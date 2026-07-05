@@ -100,14 +100,21 @@
          closures for the rest of the mapping run (499 rejections/6 min). 5.0 keeps
          a finite gate against真 aliased loops without the lock-out. -->
     <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"        type="string" value="5.0"/>
-    <param name="/rtabmap/rtabmap/Optimizer/Strategy"          type="string" value="2"/>      <!-- GTSAM -->
+    <!-- g2o: GTSAM segfaults with GPS priors enabled (verified in reprocess);
+         priors need g2o. -->
+    <param name="/rtabmap/rtabmap/Optimizer/Strategy"          type="string" value="1"/>
     <!-- DUCK AUDIT 2026-07-05: Robust (Vertigo) is INCOMPATIBLE with
          RGBD/OptimizeMaxError per both param docs — one was silently inactive.
          We keep the field-validated MaxError gate; Robust off. (The old comment
          'graph optimization ON' was a misconception — Robust is not that switch.) -->
     <param name="/rtabmap/rtabmap/Optimizer/Robust"            type="string" value="false"/>
     <param name="/rtabmap/rtabmap/Optimizer/Iterations"        type="int"    value="20"/>
-    <param name="/rtabmap/rtabmap/Optimizer/PriorsIgnored"     type="string" value="true"/>   <!-- no-op (default true), explicit -->
+    <!-- GPS priors ACTIVE (2026-07-05): rtabmap RE-optimizes the graph at every
+         load, so offline priors-optimization is silently discarded unless priors
+         are also enabled at runtime. With per-node RTK (cov-weighted) the graph
+         is anchored to reality node-by-node -> GPS and the map agree locally,
+         killing the systematic scan-vs-map stripe under GPS ownership. -->
+    <param name="/rtabmap/rtabmap/Optimizer/PriorsIgnored"     type="string" value="false"/>
 
     <!-- Memory / db hygiene (seasonal maintainability) -->
     <param name="/rtabmap/rtabmap/Mem/NotLinkedNodesKept"      type="string" value="false"/>  <!-- #9 stop ~25 MB/min db bloat while idle -->

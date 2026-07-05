@@ -82,6 +82,12 @@
 
     <!-- Proximity detection = the lidar relocalization unlock -->
     <param name="/rtabmap/rtabmap/RGBD/ProximityBySpace"        type="string" value="true"/>
+    <!-- DUCK AUDIT (mapping in lanes): default ProximityAngle 45 rejected
+         candidates from the ALTERNATING-direction pass next lane over (the 360
+         lidar does not care about heading); MaxPaths 3 only compared the most
+         recent (parallel) passes. -->
+    <param name="/rtabmap/rtabmap/RGBD/ProximityAngle"          type="string" value="90"/>
+    <param name="/rtabmap/rtabmap/RGBD/ProximityMaxPaths"       type="string" value="5"/>
     <param name="/rtabmap/rtabmap/RGBD/LocalRadius"            type="string" value="8.0"/>     <!-- #2 (was 0.20); 8 m tolerates a coarse seed prior (e.g. dock initialpose) before ICP locks; sweep 5-10 vs aliasing -->
     <param name="/rtabmap/rtabmap/RGBD/ProximityPathMaxNeighbors" type="string" value="10"/>  <!-- #3 (was 0 = one-to-many OFF) -->
     <param name="/rtabmap/rtabmap/RGBD/ProximityOdomGuess"     type="string" value="true"/>   <!-- #13 seed proximity ICP from EKF pose -->
@@ -133,7 +139,8 @@
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.1"/>
     <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="2"/>
     <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/>
-    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/>
+    <!-- DUCK AUDIT: erosion deleted 1-cell-wide real features (posts, trunks) -->
+    <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="false"/>
 
     <!-- Detection rate: 2 Hz mapping, 4 Hz localization (snappier re-lock, no nodes written) -->
     <param     if="$(arg localization)" name="/rtabmap/rtabmap/Rtabmap/DetectionRate" type="string" value="4"/>
@@ -185,6 +192,15 @@
                  (Cost: WM load time/RAM scale with db size - acceptable for correctness;
                  prune/seasonal-trim per the plan to bound it.) -->
             <param name="Mem/InitWMWithAllNodes" type="string" value="true"/>
+            <!-- DUCK AUDIT (mapping): never draw a disconnected island — a new
+                 session on an existing db starts a new map id only until the
+                 first global loop closure merges it. -->
+            <param unless="$(arg localization)" name="Rtabmap/StartNewMapOnLoopClosure" type="string" value="true"/>
+            <!-- Node density: 0.1 m default gave 1.7 nodes/m2 (800 MB db for one
+                 loop drive); 0.25 m keeps dense-coverage drives affordable while
+                 the coverage pattern itself guarantees grid completeness. -->
+            <param unless="$(arg localization)" name="RGBD/LinearUpdate" type="string" value="0.25"/>
+            <param unless="$(arg localization)" name="RGBD/AngularUpdate" type="string" value="0.25"/>
         </node>
 
     </group>

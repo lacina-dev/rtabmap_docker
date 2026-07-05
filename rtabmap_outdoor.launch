@@ -99,18 +99,26 @@
     <!-- Memory / db hygiene (seasonal maintainability) -->
     <param name="/rtabmap/rtabmap/Mem/NotLinkedNodesKept"      type="string" value="false"/>  <!-- #9 stop ~25 MB/min db bloat while idle -->
 
-    <!-- Occupancy grid for navigation (lidar-fed; works at night) -->
-    <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="8.0" />   <!-- #6 (was 2.7) -->
-    <param name="/rtabmap/rtabmap/Grid/Sensor"      type="int"    value="2"/>       <!-- #5 scan + depth (was 1=depth only) -->
-    <param name="/rtabmap/rtabmap/Grid/RayTracing"  type="bool"   value="true"/>    <!-- #7 re-clear stale/seasonal obstacles -->
-    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="10"/>
+    <!-- Occupancy grid: FIELD-TUNED 2026-07-05 (offline grid-regen A/B on the
+         GARDEN_2026 db). The old config produced a near-empty grid (11k occupied
+         cells): NormalsSegmentation misclassified on bumpy grass, MinClusterSize 10
+         erased thin real features, and the depth contribution barely expressed.
+         This config yields 3x+ more real content (vegetation as areas, tree trunks,
+         beds). Obstacle band 0.10-0.60 m = what can actually block the mower;
+         overhanging branches above the robot deliberately EXCLUDED (user decision). -->
+    <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="6.0" />   <!-- sharper edges than 8.0 -->
+    <param name="/rtabmap/rtabmap/Grid/Sensor"      type="int"    value="2"/>       <!-- scan + depth -->
+    <param name="/rtabmap/rtabmap/Grid/RayTracing"  type="bool"   value="true"/>
+    <param name="/rtabmap/rtabmap/Grid/MinClusterSize"     type="int" value="3"/>
     <param name="/rtabmap/rtabmap/Grid/MaxObstacleHeight" type="double" value="0.6"/>
-    <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0"/>
+    <param name="/rtabmap/rtabmap/Grid/MinObstacleHeight" type="double" value="0.10"/>
     <param name="/rtabmap/rtabmap/Grid/MaxGroundAngle" type="double" value="55"/>
     <param name="/rtabmap/rtabmap/Grid/ClusterRadius" type="double" value="0.15"/>
-    <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.15"/>
-    <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="true"/>
+    <param name="/rtabmap/rtabmap/Grid/MaxGroundHeight"       type="double" value="0.10"/>
+    <param name="/rtabmap/rtabmap/Grid/NormalsSegmentation" type="bool" value="false"/>
     <param name="/rtabmap/rtabmap/Grid/FlatObstacleDetected" type="bool" value="true"/>
+    <param name="/rtabmap/rtabmap/Grid/NoiseFilteringRadius" type="double" value="0.1"/>
+    <param name="/rtabmap/rtabmap/Grid/NoiseFilteringMinNeighbors" type="int" value="2"/>
     <param name="/rtabmap/rtabmap/GridGlobal/FootprintRadius"                type="string" value="0.3"/>
     <param name="/rtabmap/rtabmap/GridGlobal/Eroded"                type="bool" value="true"/>
 

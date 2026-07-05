@@ -74,7 +74,10 @@
          open lawn (real overlap ~2-15%); with OptimizeMaxError+Robust+MaxTranslation
          still guarding, the rtabmap default 0.1 is the right gate. -->
     <param name="/rtabmap/rtabmap/Icp/CorrespondenceRatio"       type="string" value="0.1"/>
-    <param name="/rtabmap/rtabmap/Icp/PointToPlane"             type="string" value="false"/>  <!-- no-op (default false), explicit -->
+    <!-- NOTE (duck audit): default is TRUE, so this is NOT a no-op — it actively
+         downgrades to point-to-point. Kept false pending libpointmatcher build
+         verification; point-to-line would register tighter on structures. -->
+    <param name="/rtabmap/rtabmap/Icp/PointToPlane"             type="string" value="false"/>
     <param name="/rtabmap/rtabmap/Icp/MaxTranslation"          type="string" value="0.5"/>     <!-- #17 anti-teleport -->
 
     <!-- Proximity detection = the lidar relocalization unlock -->
@@ -92,8 +95,12 @@
          a finite gate against真 aliased loops without the lock-out. -->
     <param name="/rtabmap/rtabmap/RGBD/OptimizeMaxError"        type="string" value="5.0"/>
     <param name="/rtabmap/rtabmap/Optimizer/Strategy"          type="string" value="2"/>      <!-- GTSAM -->
-    <param name="/rtabmap/rtabmap/Optimizer/Robust"            type="string" value="true"/>
-    <param name="/rtabmap/rtabmap/Optimizer/Iterations"        type="int"    value="20"/>     <!-- graph optimization ON -->
+    <!-- DUCK AUDIT 2026-07-05: Robust (Vertigo) is INCOMPATIBLE with
+         RGBD/OptimizeMaxError per both param docs — one was silently inactive.
+         We keep the field-validated MaxError gate; Robust off. (The old comment
+         'graph optimization ON' was a misconception — Robust is not that switch.) -->
+    <param name="/rtabmap/rtabmap/Optimizer/Robust"            type="string" value="false"/>
+    <param name="/rtabmap/rtabmap/Optimizer/Iterations"        type="int"    value="20"/>
     <param name="/rtabmap/rtabmap/Optimizer/PriorsIgnored"     type="string" value="true"/>   <!-- no-op (default true), explicit -->
 
     <!-- Memory / db hygiene (seasonal maintainability) -->
@@ -106,6 +113,12 @@
          This config yields 3x+ more real content (vegetation as areas, tree trunks,
          beds). Obstacle band 0.10-0.60 m = what can actually block the mower;
          overhanging branches above the robot deliberately EXCLUDED (user decision). -->
+    <!-- DUCK AUDIT 2026-07-05: native 2D grid (Grid/3D default true built the 2D
+         map via a 3D detour AND silently no-op'd RayTracing without OctoMap);
+         Scan2dUnknownSpaceFilled fills free space along lidar rays so the lawn
+         is not UNKNOWN-gray between passes. -->
+    <param name="/rtabmap/rtabmap/Grid/3D"          type="bool"   value="false"/>
+    <param name="/rtabmap/rtabmap/Grid/Scan2dUnknownSpaceFilled" type="bool" value="true"/>
     <param name="/rtabmap/rtabmap/Grid/RangeMax"    type="string" value="6.0" />   <!-- sharper edges than 8.0 -->
     <param name="/rtabmap/rtabmap/Grid/Sensor"      type="int"    value="2"/>       <!-- scan + depth -->
     <param name="/rtabmap/rtabmap/Grid/RayTracing"  type="bool"   value="true"/>
@@ -129,6 +142,10 @@
     <!-- Localization-mode-only: whole-map kidnap reloc + odom-cache anti-teleport -->
     <param if="$(arg localization)" name="/rtabmap/rtabmap/RGBD/ProximityGlobalScanMap" type="string" value="true"/>  <!-- #15 -->
     <param if="$(arg localization)" name="/rtabmap/rtabmap/RGBD/MaxOdomCacheSize"       type="string" value="20"/>    <!-- #16 -->
+    <!-- DUCK AUDIT: default 50 silently discarded proximity hypotheses more than
+         50 graph links from the last loop closure — kills night reloc across a
+         big multi-session graph even when candidates are inside LocalRadius. -->
+    <param if="$(arg localization)" name="/rtabmap/rtabmap/RGBD/ProximityMaxGraphDepth" type="string" value="0"/>
 
 
     <group ns="rtabmap">

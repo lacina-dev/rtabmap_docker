@@ -9,9 +9,21 @@
         <param name="decimation" type="int" value="8"/><!--def=1(off)-->
         <param name="voxel_size" type="double" value="0.05"/><!--def=0.0(off)-->
         <!--<param name="min_depth" type="double" value="0.0"/>def=0.0-->
-        <param name="max_depth" type="double" value="3.5"/><!--def=0.0(off); 2.5->3.5: drivejsi reakce na prekazku-->
-        <param name="noise_filter_radius" type="double" value="0.4"/> <!--def=0.0(off)-->
-        <param name="noise_filter_min_neighbors" type="int" value="3"/>
+        <!-- dataprep 2026-07-12 (D435 sunlight-noise / map-quality tier):
+             max_depth 3.5->2.8  : D435 stereo depth degrades badly past ~3 m
+                                   outdoors (sun-washed disparity = ghost points);
+                                   2.8 keeps a useful obstacle horizon while
+                                   dropping the far unreliable tail.
+             noise_filter_radius 0.4->0.12 : the old 0.4 m radius accepted
+                                   almost any neighbour (huge sphere) so the
+                                   outlier removal was near-inert; 0.12 m is a
+                                   real tight radius that actually strips
+                                   isolated speckle.
+             min_neighbors 3->5  : require more support within that tight
+                                   radius before a point survives. -->
+        <param name="max_depth" type="double" value="2.8"/><!--was 3.5-->
+        <param name="noise_filter_radius" type="double" value="0.12"/> <!--was 0.4-->
+        <param name="noise_filter_min_neighbors" type="int" value="5"/><!--was 3-->
     </node>
 
     <node pkg="nodelet" type="nodelet" name="obstacles_detection" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing" output="screen">

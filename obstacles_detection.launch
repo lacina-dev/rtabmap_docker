@@ -46,4 +46,46 @@
         <param name="Grid/FlatObstacleDetected" type="bool" value="true"/>
     </node>
 
+    <!-- 2026-08-09 WIDE chain for MAPPING ONLY (direct_raster live obstacle
+         tuning). The narrow /obstacles_cloud|/ground_cloud above stays the
+         navigation source (global costmap + cloud_costmap) and is untouched.
+         This chain deliberately segments a WIDE height window (0.05..2.0 m)
+         and a longer depth horizon (4.0 m); direct_raster then applies the
+         LIVE-tunable height window / cluster / range filters on top, so the
+         final "what is an obstacle" decision is adjustable at runtime via
+         /mapping/set_direct without restarting this container. Ground
+         thresholds match the narrow instance so /mapping/ground_cloud_wide
+         stays equivalent to /ground_cloud. -->
+    <node pkg="nodelet" type="nodelet" name="depth2cloud_wide" args="standalone rtabmap_util/point_cloud_xyz" output="screen">
+        <remap from="depth/image" to="/rtabmap/depth/image_out"/>
+        <remap from="depth/camera_info" to="/rtabmap/rgb/camera_info_out"/>
+        <remap from="cloud" to="/mapping/cloudXYZ_wide"/>
+
+        <param name="approx_sync" type="bool" value="true"/>
+        <param name="decimation" type="int" value="8"/>
+        <param name="voxel_size" type="double" value="0.05"/>
+        <!-- 4.0 (vs 2.8 narrow): the live obstacle_max_range_m slider needs
+             headroom; direct_raster's default cap stays 2.8 so behaviour is
+             unchanged until the user raises it. -->
+        <param name="max_depth" type="double" value="4.0"/>
+        <param name="noise_filter_radius" type="double" value="0.12"/>
+        <param name="noise_filter_min_neighbors" type="int" value="5"/>
+    </node>
+
+    <node pkg="nodelet" type="nodelet" name="obstacles_detection_wide" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing_wide" output="screen">
+        <remap from="cloud"     to="/mapping/cloudXYZ_wide"/>
+        <remap from="obstacles" to="/mapping/obstacles_cloud_wide"/>
+        <remap from="ground"    to="/mapping/ground_cloud_wide"/>
+        <param name="frame_id"             type="string" value="base_link"/>
+        <param name="wait_for_transform"   type="bool" value="true"/>
+        <param name="Grid/MinClusterSize"     type="int" value="2"/>
+        <param name="Grid/MaxObstacleHeight" type="double" value="2.0"/>
+        <param name="Grid/MinObstacleHeight" type="double" value="0.05"/>
+        <param name="Grid/MaxGroundHeight"       type="double" value="0.15"/>
+        <param name="Grid/MaxGroundAngle" type="double" value="35"/>
+        <param name="Grid/ClusterRadius" type="double" value="0.15"/>
+        <param name="Grid/NormalsSegmentation" type="bool" value="true"/>
+        <param name="Grid/FlatObstacleDetected" type="bool" value="true"/>
+    </node>
+
 </launch>

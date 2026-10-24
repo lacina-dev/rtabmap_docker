@@ -1,6 +1,8 @@
 <launch>
+    <!-- node stdout is in ~/.ros/log/<run>/<node>-N-stdout.log (output="log"); line-buffer it so lines land at once -->
+    <env name="ROSCONSOLE_STDOUT_LINE_BUFFERED" value="1"/>
 
-    <node pkg="nodelet" type="nodelet" name="depth2cloud" args="standalone rtabmap_util/point_cloud_xyz" output="screen">
+    <node pkg="nodelet" type="nodelet" name="depth2cloud" args="standalone rtabmap_util/point_cloud_xyz" output="log">
         <remap from="depth/image" to="/rtabmap/depth/image_out"/>
         <remap from="depth/camera_info" to="/rtabmap/rgb/camera_info_out"/>
         <remap from="cloud" to="/cloudXYZ"/>
@@ -26,7 +28,7 @@
         <param name="noise_filter_min_neighbors" type="int" value="5"/><!--was 3-->
     </node>
 
-    <node pkg="nodelet" type="nodelet" name="obstacles_detection" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing" output="screen">
+    <node pkg="nodelet" type="nodelet" name="obstacles_detection" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing" output="log">
 <!--        <remap from="cloud"     to="/vdb_mapping/vdb_map_pointcloud"/>-->
         <remap from="cloud"     to="/cloudXYZ"/>
         <remap from="obstacles" to="/obstacles_cloud"/>
@@ -56,7 +58,7 @@
          /mapping/set_direct without restarting this container. Ground
          thresholds match the narrow instance so /mapping/ground_cloud_wide
          stays equivalent to /ground_cloud. -->
-    <node pkg="nodelet" type="nodelet" name="depth2cloud_wide" args="standalone rtabmap_util/point_cloud_xyz" output="screen">
+    <node pkg="nodelet" type="nodelet" name="depth2cloud_wide" args="standalone rtabmap_util/point_cloud_xyz" output="log">
         <remap from="depth/image" to="/rtabmap/depth/image_out"/>
         <remap from="depth/camera_info" to="/rtabmap/rgb/camera_info_out"/>
         <remap from="cloud" to="/mapping/cloudXYZ_wide"/>
@@ -72,7 +74,7 @@
         <param name="noise_filter_min_neighbors" type="int" value="5"/>
     </node>
 
-    <node pkg="nodelet" type="nodelet" name="obstacles_detection_wide" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing_wide" output="screen">
+    <node pkg="nodelet" type="nodelet" name="obstacles_detection_wide" args="standalone rtabmap_util/obstacles_detection rtabmap_pc_processing_wide" output="log">
         <remap from="cloud"     to="/mapping/cloudXYZ_wide"/>
         <remap from="obstacles" to="/mapping/obstacles_cloud_wide"/>
         <remap from="ground"    to="/mapping/ground_cloud_wide"/>

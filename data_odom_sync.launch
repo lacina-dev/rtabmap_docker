@@ -1,8 +1,10 @@
 <launch>
+    <!-- node stdout is in ~/.ros/log/<run>/<node>-N-stdout.log (output="log"); line-buffer it so lines land at once -->
+    <env name="ROSCONSOLE_STDOUT_LINE_BUFFERED" value="1"/>
 
     <arg name="camera2" default="d435"/>
     <group ns="rtabmap">
-        <node pkg="nodelet" type="nodelet" name="data_odom_sync" args="standalone rtabmap_legacy/data_odom_sync" output="screen" respawn="true">
+        <node pkg="nodelet" type="nodelet" name="data_odom_sync" args="standalone rtabmap_legacy/data_odom_sync" output="log" respawn="true">
               <remap from="rgb/image_in"        to="/$(arg camera2)/color/image_raw"/>
               <remap from="depth/image_in"      to="/$(arg camera2)/aligned_depth_to_color/image_raw"/>
               <remap from="rgb/camera_info_in"  to="/$(arg camera2)/color/camera_info"/>

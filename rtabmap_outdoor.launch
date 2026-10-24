@@ -1,4 +1,6 @@
 <launch>
+    <!-- node stdout is in ~/.ros/log/<run>/<node>-N-stdout.log (output="log"); line-buffer it so lines land at once -->
+    <env name="ROSCONSOLE_STDOUT_LINE_BUFFERED" value="1"/>
     <!-- ========================================================================
          rtabmap_outdoor_unified.launch  (2026-06-21, audit-hardened)
 
@@ -164,7 +166,7 @@
 
     <group ns="rtabmap">
 
-        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args)">
+        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="log" args="$(arg rtabmap_args)">
             <remap from="odom" to="/rtabmap/odom_out"/>
             <remap from="scan" to="/scan"/>
             <remap from="rgb/image" to="/rtabmap/rgb/image_out"/>

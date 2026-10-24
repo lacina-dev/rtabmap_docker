@@ -1,4 +1,6 @@
 <launch>
+    <!-- node stdout is in ~/.ros/log/<run>/<node>-N-stdout.log (output="log"); line-buffer it so lines land at once -->
+    <env name="ROSCONSOLE_STDOUT_LINE_BUFFERED" value="1"/>
     <rosparam command="delete" ns="rtabmap" />
 
     <arg name="camera1"              			default="t265"/>
@@ -10,7 +12,7 @@
     <arg name="rtabmapviz"            default="false"/>
 
     <group ns="rtabmap">
-        <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_sync/rgbd_sync" output="screen">
+        <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_sync/rgbd_sync" output="log">
             <remap from="rgb/image"        to="/$(arg camera2)/color/image_raw"/>
             <remap from="depth/image"      to="/$(arg camera2)/aligned_depth_to_color/image_raw"/>
             <remap from="rgb/camera_info"  to="/$(arg camera2)/color/camera_info"/>
@@ -20,7 +22,7 @@
             <param name="approx_sync"       value="false"/>
         </node>
 
-        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="screen" args="$(arg rtabmap_args) --Rtabmap/DetectionRate 2"> <!-- delete_db_on_start Rtabmap/DetectionRate 10-->
+        <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" output="log" args="$(arg rtabmap_args) --Rtabmap/DetectionRate 2"> <!-- delete_db_on_start Rtabmap/DetectionRate 10-->
 
             <remap from="scan" to="/scan"/>
             <remap from="rgbd_image" to="rgbd_image"/>
@@ -72,7 +74,7 @@
         </node>
 
         <!-- visualization with rtabmapviz -->
-        <node if="$(arg rtabmapviz)" pkg="rtabmap_viz" type="rtabmapviz" name="rtabmapviz" args="" output="screen">
+        <node if="$(arg rtabmapviz)" pkg="rtabmap_viz" type="rtabmapviz" name="rtabmapviz" args="" output="log">
             <param name="subscribe_depth"             type="bool" value="false"/>
             <param name="subscribe_rgbd"             type="bool" value="true"/>
             <param name="subscribe_scan"              type="bool" value="true"/>
